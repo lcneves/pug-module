@@ -33,6 +33,11 @@ const optionDefinitions = [
     name: 'quiet',
     alias: 'q',
     type: Boolean
+  },
+  {
+    name: 'recursive',
+    alias: 'r',
+    type: Boolean
   }
 
 ];
@@ -42,9 +47,39 @@ var buffer = '\'use strict\';\n\n';
 buffer += 'const pug = require(\'pug-runtime\');\n\n';
 
 for (let file of options.files) {
-  let module = camelCase(path.basename(file, '.pug')).replace(/\W/g, '');
-  let compiled = pug.compileFile(file);
-  buffer += '\n' + 'module.exports[\'' + module + '\'] = ' + compiled + ';\n';
+  if (options.recursive && fs.lstatSync(file).isDirectory()) {
+    const filter = (file) => {
+      return path.extname(file) === '.pug'
+    }
+
+    const walkSync = (dir, filelist = []) => {
+      fs.readdirSync(dir).forEach(file => {
+        if (fs.statSync(path.join(dir, file)).isDirectory()) {
+          filelist = walkSync(path.join(dir, file), filelist)
+        } else {
+          if (filter(file)) {
+            filelist = filelist.concat(path.join(dir, file));
+          }
+        }
+      });
+      return filelist;
+    }
+
+    const pugFiles = walkSync(file)
+    pugFiles.forEach(subFile => {
+      const rx = new RegExp(`\$${file}/*`, 'i')
+      const parts = subFile.replace(rx, '')
+        .substring(file.length + 1, subFile.length - '.pug'.length)
+        .split('/')
+      let module = camelCase(parts).replace(/\W/g, '')
+      let compiled = pug.compileFile(subFile);
+      buffer += '\n' + 'module.exports[\'' + module + '\'] = ' + compiled + ';\n';
+    })
+  } else {
+    let module = camelCase(path.basename(file, '.pug')).replace(/\W/g, '');
+    let compiled = pug.compileFile(file);
+    buffer += '\n' + 'module.exports[\'' + module + '\'] = ' + compiled + ';\n';
+  }
 }
 
 fs.writeFile(options.output, buffer, (err) => {

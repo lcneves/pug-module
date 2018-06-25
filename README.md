@@ -44,7 +44,7 @@ node_modules/.bin/pug-module [options] path/to/files*.pug -o path/to/compiled.js
 
 `-r, --recursive`: Find all pug files under the specified directories
 and generate camelcase name from the relative directory/file path.
-Given mydir as a parameter and mydir/foo/bar/helloWorld.pug, the module name will resolve to fooBarHelloWorld(...)
+Given mydir as a parameter and mydir/foo/bar/helloWorld.pug, the module name will resolve to fooBarHelloWorld(...).
 
 A directory structure like this:
 ```
@@ -57,7 +57,7 @@ mail
 ----html.pug
 ```
 will generate the modules
-welcomeSubject, welcomeHtml, confirmSubject, and confirmHtml
+`welcomeSubject`, `welcomeHtml`, `confirmSubject`, and `confirmHtml`.
 
 ### How is the template function name composed?
 

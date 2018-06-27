@@ -66,11 +66,11 @@ for (let file of options.files) {
 
     const pugFiles = walkSync(file);
     pugFiles.forEach(subFile => {
-      const rx = new RegExp('\$' + file + '/*', 'i');
+      const rx = new RegExp('\$' + file, 'i');
       const parts = subFile.replace(rx, '')
         .substring(file.length + 1, subFile.length - '.pug'.length)
         .split('/');
-      let module = camelCase(parts).replace(/\W/g, '');
+      let module = camelCase(parts.join('-')).replace(/\W/g, '');
       let compiled = pug.compileFile(subFile);
       buffer +=
         '\n' + 'module.exports[\'' + module + '\'] = ' + compiled + ';\n';

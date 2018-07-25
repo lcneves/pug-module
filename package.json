@@ -1,6 +1,6 @@
 {
   "name": "pug-module",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "Compiles pug files into a module that can be required.",
   "main": "index.js",
   "repository": {
